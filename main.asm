@@ -10,6 +10,10 @@
 	JMP valor_final
 
 mostrar_questao:
+	CALL reseta_acerto
+	MOV 0x000d
+	INT output
+
 	MOV 1
 	SUB questao
 	JZ case_1
@@ -153,13 +157,39 @@ resposta_correta:
 	STA acertos
 	JMP mostrar_questao
 
+reseta_acerto:
+	LDA valor_inicial_ptr_acerto
+	STA ptr_acerto
+	RET
+
 valor_final:
 	LDA mask_output
 	MOV 48
 	ADD acertos
 	INT output
+
+	MOV 32
+	INT output
+
+	CALL mostra_acertos_string
 	JMP end
 
+mostra_acertos_string:
+	LDA mask_output
+	LDI ptr_acertos_finais
+	STA valor_caracter
+	INT output
+
+	MOV 1
+	ADD ptr_acertos_finais
+	STA ptr_acertos_finais
+
+	MOV 0
+	SUB valor_caracter
+	JN mostra_acertos_string
+
+	RET
+	
 end:
 	INT exit
 
@@ -170,29 +200,33 @@ end:
 	mask_input: DD 0x100
 	last_caracter: DD 0
 
-	primeira_questao: INITB "1 - Qual bicho transmite Doenca de Chagas?", 0x000d, "1 - Abelha", 0x000d, "2 - Barata", 0x000d, "3 - Pulga", 0x000d, "4 - Barbeiro", 0x000d, 0
+	primeira_questao: INITB 0x000d, "1 - Qual bicho transmite Doenca de Chagas?", 0x000d, "1 - Abelha", 0x000d, "2 - Barata", 0x000d, "3 - Pulga", 0x000d, "4 - Barbeiro", 0x000d, 0
 	resposta_um: DD 52
 	primeiro_ptr: DD primeira_questao
 
-	segunda_questao: INITB "2 - Qual e o coletivo de caes?", 0x000d, " 1 - Matilha", 0x000d, " 2 - Rebanho", 0x000d, "3 - Alcateia", 0x000d, "4 - Manada", 0x000d, 0
+	segunda_questao: INITB 0x000d, "2 - Qual e o coletivo de caes?", 0x000d, " 1 - Matilha", 0x000d, " 2 - Rebanho", 0x000d, "3 - Alcateia", 0x000d, "4 - Manada", 0x000d, 0
 	resposta_dois: DD 49
 	segundo_ptr: DD segunda_questao
 
-	terceira_questao: INITB "3 - Qual e o triangulo que tem todos os lados diferentes?", 0x000d, " 1 - Equilatero", 0x000d, " 2 - Isosceles", 0x000d, "3 - Escaleno", 0x000d, "4 - Trapezio", 0x000d, 0
+	terceira_questao: INITB 0x000d, "3 - Qual e o triangulo que tem todos os lados diferentes?", 0x000d, " 1 - Equilatero", 0x000d, " 2 - Isosceles", 0x000d, "3 - Escaleno", 0x000d, "4 - Trapezio", 0x000d, 0
 	resposta_tres: DD 51
 	terceiro_ptr: DD terceira_questao
 
-	quarta_questao: INITB "4 - Qual o pais cede da copa do mundo de 2010?", 0x000d, "1 - Franca", 0x000d, " 2 - Brasil", 0x000d, "3 - Africa do Sul", 0x000d, "4 - Russia", 0x000d, 0
+	quarta_questao: INITB 0x000d, "4 - Qual o pais cede da copa do mundo de 2010?", 0x000d, "1 - Franca", 0x000d, " 2 - Brasil", 0x000d, "3 - Africa do Sul", 0x000d, "4 - Russia", 0x000d, 0
 	resposta_quatro: DD 51
 	quarto_ptr: DD quarta_questao
 
-	quinta_questao: INITB "5 - Seguindo a sequencia do baralho, qual carta vem depois do dez?", 0x000d, "1 - Rei", 0x000d, "2 - Valete", 0x000d, "3 - Nove", 0x000d, "4 - As", 0x000d, 0
+	quinta_questao: INITB 0x000d, "5 - Seguindo a sequencia do baralho, qual carta vem depois do dez?", 0x000d, "1 - Rei", 0x000d, "2 - Valete", 0x000d, "3 - Nove", 0x000d, "4 - As", 0x000d, 0
 	resposta_cinco: DD 50
 	quinto_ptr: DD quinta_questao
 
 	acerto: INITB "Acertou!", 0
 	ptr_acerto: DD acerto
+	valor_inicial_ptr_acerto: DD acerto
 	valor_caracter: DD 0
+
+	acertos_finais: INITB "Acertos!", 0
+	ptr_acertos_finais: DD acertos_finais
 
 	output: DD 21
 	questao: DD 1
